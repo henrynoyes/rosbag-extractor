@@ -1,0 +1,13 @@
+[project]
+name = "rosbag-extractor"
+version = "0.1.0"
+description = "Pythonized extraction of ROS bags"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "ipykernel>=6.29.5",
+    "opencv-python-headless>=4.12.0.88",
+    "pyyaml>=6.0.2",
+    "rosbags>=0.10.10",
+    "tqdm>=4.67.1",
+]
