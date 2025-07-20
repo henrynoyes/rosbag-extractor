@@ -20,6 +20,7 @@ class VideoExtractor:
         self.fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         self.convert_funcs = {
             'rgb8': self._convert_rgb,
+            'bgr8': self._convert_bgr,
             'mono8': self._convert_mono,
             '16UC1': self._convert_depth,
         }
@@ -46,6 +47,11 @@ class VideoExtractor:
     def _convert_rgb(self, msg):
         arry = np.frombuffer(msg.data, dtype=np.uint8).reshape((msg.height, msg.width, 3))
         bgr_arry = cv2.cvtColor(arry, cv2.COLOR_RGB2BGR)
+        
+        return bgr_arry
+    
+    def _convert_bgr(self, msg):
+        bgr_arry = np.frombuffer(msg.data, dtype=np.uint8).reshape((msg.height, msg.width, 3))
         
         return bgr_arry
     
