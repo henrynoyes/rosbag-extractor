@@ -53,3 +53,4 @@ video_extractor.extract(bag_path='data/mybag', config='video.yaml')
 
 - [ ] Add script for batch extraction on directory of bags
 - [ ] Add option for ROS distro
+- [ ] Rework CLI using [tyro](https://github.com/brentyi/tyro)
