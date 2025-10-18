@@ -10,4 +10,5 @@ dependencies = [
     "pyyaml>=6.0.2",
     "rosbags>=0.10.10",
     "tqdm>=4.67.1",
+    "tyro>=0.9.35",
 ]

@@ -1,5 +1,7 @@
 # rosbag-extractor
 
+Minimal tool to extract data from ROS2 bags using [rosbags](https://gitlab.com/ternaris/rosbags).
+
 > [!NOTE]
 > This is implemented in pure Python and does not require a ROS environment
 
@@ -7,7 +9,7 @@
 
 Install with [uv](https://docs.astral.sh/uv/),
 ```bash
-git clone git@github.com:henrynoyes/rosbag-extractor.git
+git clone https://github.com/henrynoyes/rosbag-extractor.git
 cd rosbag-extractor
 uv sync
 ```
@@ -47,7 +49,7 @@ video_extractor.extract(bag_path='data/mybag', config='video.yaml')
 - `extract_video.py` - extracts MP4 from image stream
 
 > [!TIP]
-> Add a `--help` to view command line options
+> Add a `--help` to view command line options, courtesy of [tyro](https://github.com/brentyi/tyro)
 
 ## Future Features
 
