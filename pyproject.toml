@@ -12,3 +12,29 @@ dependencies = [
     "tqdm>=4.67.1",
     "tyro>=0.9.35",
 ]
+
+[project.optional-dependencies]
+dev = [
+    "mypy>=1.13.0",
+    "types-PyYAML>=6.0.0",
+    "types-tqdm>=4.67.0.20250809"
+]
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "B", "UP"]
+
+[tool.mypy]
+python_version = "3.10"
+check_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = ["rosbags.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "cv2.*"
+follow_imports = "skip"
+follow_imports_for_stubs = true
