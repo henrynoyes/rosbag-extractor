@@ -19,12 +19,12 @@ uv sync
 ### CLI
 
 ```shell
-uv run extract_video.py -c video.yaml data/mybag
+uv run extract_video.py data/mybag --config-path configs/video.yaml
 ```
 or,
 ```shell
 source .venv/bin/activate
-python3 extract_video.py -c video.yaml data/mybag
+python3 extract_video.py data/mybag --config-path configs/video.yaml
 ```
 
 ### Notebook
@@ -35,12 +35,12 @@ from info import extract_info
 ```
 
 ```python
-extract_info('data/mybag')
+extract_info("data/mybag")
 ```
 
 ```python
-video_extractor = VideoExtractor()
-video_extractor.extract(bag_path='data/mybag', config='video.yaml')
+video_extractor = VideoExtractor(config="configs/video.yaml")
+video_extractor.extract(bag_path="data/mybag")
 ```
 
 ### Scripts
@@ -60,6 +60,6 @@ uvx pre-commit run ruff --all-files # manually lint/format with ruff
 
 ## Future Features
 
+- [ ] Auto-detect fps,width,height
 - [ ] Add script for batch extraction on directory of bags
 - [ ] Add option for ROS distro
-- [ ] Rework CLI using [tyro](https://github.com/brentyi/tyro)

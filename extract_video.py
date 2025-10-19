@@ -12,7 +12,7 @@ from tqdm import tqdm
 class VideoExtractor:
     """Extract MP4 videos from ROS2 bags"""
 
-    def __init__(self):
+    def __init__(self, config: Path | str | dict | None = None):
         self.typestore = get_typestore(Stores.ROS2_HUMBLE)
         self.fourcc = cv2.VideoWriter_fourcc(*"mp4v")
         self.convert_funcs = {
@@ -21,6 +21,27 @@ class VideoExtractor:
             "mono8": self._convert_mono,
             "16UC1": self._convert_depth,
         }
+        self._config = None
+        if config is not None:
+            self.load_config(config)
+
+    def load_config(self, config: Path | str | dict) -> None:
+        """Set configuration from YAML/dict
+
+        Args:
+            config: Path to YAML config file or config dict
+        """
+        if isinstance(config, dict):
+            self._config = config
+        else:
+            with open(config) as f:
+                self._config = yaml.safe_load(f)
+
+    @property
+    def config(self) -> dict:
+        if self._config is None:
+            raise ValueError("No configuration loaded. Call load_config() or set in the constructor")
+        return self._config
 
     def _handle_overwrite(self, output_path: Path) -> None:
         if output_path.exists():
@@ -71,12 +92,15 @@ class VideoExtractor:
             print(f"Error converting image at {timestamp}: {e}")
             return None
 
-    def extract(self, bag_path: Path, config_path: Path, verbose: bool = False) -> None:
+    def extract(self, bag_path: Path | str, verbose: bool = False) -> None:
+        """Extract MP4 video from ROS2 bag using loaded configuration
+
+        Args:
+            bag_path: Path to input bag
+            verbose: Enable verbose output
+        """
         bag_path = Path(bag_path)
-        config_path = Path(config_path)
-        with open(config_path) as f:
-            config = yaml.safe_load(f)
-        print(f"Using configuration: {config_path.name}")
+        config = self.config
 
         if verbose:
             print(f'\ntopic: "{config["topic"]}"')
@@ -119,15 +143,15 @@ class VideoExtractor:
 
 
 def main(bag_path: Path, /, config_path: Path, verbose: bool = False) -> None:
-    """Extracts an MP4 video from a ROS2 bag
+    """Extract MP4 video from ROS2 bag
 
     Args:
         bag_path: Path to input bag
         config_path: Path to YAML config
         verbose: Enable verbose output
     """
-    extractor = VideoExtractor()
-    extractor.extract(bag_path, config_path, verbose)
+    extractor = VideoExtractor(config_path)
+    extractor.extract(bag_path, verbose)
 
 
 if __name__ == "__main__":
