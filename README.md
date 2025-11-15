@@ -1,13 +1,15 @@
 # rosbag-extractor
 
+Minimal tool to extract data from ROS2 bags using [rosbags](https://gitlab.com/ternaris/rosbags).
+
 > [!NOTE]
 > This is implemented in pure Python and does not require a ROS environment
 
 ## Installation
 
 Install with [uv](https://docs.astral.sh/uv/),
-```bash
-git clone git@github.com:henrynoyes/rosbag-extractor.git
+```shell
+git clone https://github.com/henrynoyes/rosbag-extractor.git
 cd rosbag-extractor
 uv sync
 ```
@@ -16,13 +18,15 @@ uv sync
 
 ### CLI
 
-```bash
-uv run extract_video.py -c video.yaml data/mybag
+```shell
+uv run rbe-info data/mybag
+uv run rbe-video data/mybag --config-path configs/video.yaml
 ```
 or,
-```bash
+```shell
 source .venv/bin/activate
-python3 extract_video.py -c video.yaml data/mybag
+rbe-info data/mybag
+rbe-video data/mybag --config-path configs/video.yaml
 ```
 
 ### Notebook
@@ -33,24 +37,30 @@ from info import extract_info
 ```
 
 ```python
-extract_info('data/mybag')
+extract_info("data/mybag")
 ```
 
 ```python
-video_extractor = VideoExtractor()
-video_extractor.extract(bag_path='data/mybag', config='video.yaml')
+video_extractor = VideoExtractor(config="configs/video.yaml")
+video_extractor.extract(bag_path="data/mybag")
 ```
 
 ### Scripts
 
-- `info.py` - clone of `ros2 bag info`
-- `extract_video.py` - extracts MP4 from image stream
+- `rbe-info` - clone of `ros2 bag info`
+- `rbe-video` - extracts an MP4 video from a [sensor_msgs/Image](https://docs.ros2.org/foxy/api/sensor_msgs/msg/Image.html) topic
 
 > [!TIP]
-> Add a `--help` to view command line options
+> Add a `--help` to view command line options, courtesy of [tyro](https://github.com/brentyi/tyro)
+
+## Development
+
+```shell
+uv run --dev mypy . # type check with mypy
+uvx pre-commit run ruff --all-files # manually lint/format with ruff
+```
 
 ## Future Features
 
 - [ ] Add script for batch extraction on directory of bags
 - [ ] Add option for ROS distro
-- [ ] Rework CLI using [tyro](https://github.com/brentyi/tyro)
