@@ -1,5 +1,3 @@
   topic: "/camera/image"
   output_path: null
   fps: 60
-  width: 640
-  height: 480

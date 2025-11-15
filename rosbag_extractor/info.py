@@ -40,5 +40,10 @@ def extract_info(bag_path: Path, /) -> None:
         print(f"  {topic}: {count}")
 
 
-if __name__ == "__main__":
+def cli() -> None:
+    """CLI entry point"""
     tyro.cli(extract_info)
+
+
+if __name__ == "__main__":
+    cli()

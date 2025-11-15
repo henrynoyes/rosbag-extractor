@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Any
 
 import cv2
 import numpy as np
@@ -11,6 +12,8 @@ from tqdm import tqdm
 
 class VideoExtractor:
     """Extract MP4 videos from ROS2 bags"""
+
+    _config: dict[str, Any] | None
 
     def __init__(self, config: Path | str | dict | None = None):
         self.typestore = get_typestore(Stores.ROS2_HUMBLE)
@@ -102,24 +105,17 @@ class VideoExtractor:
         bag_path = Path(bag_path)
         config = self.config
 
-        if verbose:
-            print(f'\ntopic: "{config["topic"]}"')
-            print(f"output_path: {config.get('output_path')}")
-            print(f"fps: {config['fps']}")
-            print(f"width: {config['width']}")
-            print(f"height: {config['height']}\n")
-
         output_path = config.get("output_path")
         topic = config["topic"]
         if output_path is None:
             output_path = self._gen_output_path(bag_path, topic)
         else:
             output_path = Path(output_path)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
 
         self._handle_overwrite(output_path)
-        video_writer = cv2.VideoWriter(
-            str(output_path), self.fourcc, config["fps"], (config["width"], config["height"])
-        )
+
+        print(f"Reading {bag_path} ...")
 
         with AnyReader([bag_path], default_typestore=self.typestore) as reader:
             connections = [x for x in reader.connections if x.topic == topic]
@@ -127,18 +123,31 @@ class VideoExtractor:
                 print(f"No messages found for topic: {topic}")
                 return
 
-            print(f"Reading {bag_path} ...")
-            msg_count = sum(1 for _ in reader.messages(connections=connections))
-            with tqdm(total=msg_count, desc="Processing", unit="frames") as pbar:
-                for connection, timestamp, rawdata in reader.messages(connections=connections):
-                    msg = reader.deserialize(rawdata, connection.msgtype)
-                    img = self._to_cv2(msg, timestamp)
+            video_writer = None
 
+            with tqdm(desc="Processing", unit=" frames") as pbar:
+                for connection, timestamp, rawdata in reader.messages(connections=connections):
+                    msg: Any = reader.deserialize(rawdata, connection.msgtype)
+
+                    if video_writer is None:
+                        width, height = msg.width, msg.height
+
+                        if verbose:
+                            tqdm.write(f'\ntopic: "{topic}"')
+                            tqdm.write(f"output_path: {output_path}")
+                            tqdm.write(f"fps: {config['fps']}")
+                            tqdm.write(f"width: {width}")
+                            tqdm.write(f"height: {height}\n")
+
+                        video_writer = cv2.VideoWriter(str(output_path), self.fourcc, config["fps"], (width, height))
+
+                    img = self._to_cv2(msg, timestamp)
                     if img is not None:
                         video_writer.write(img)
                     pbar.update(1)
 
-        video_writer.release()
+        if video_writer is not None:
+            video_writer.release()
         print(f"Success! Video saved to {output_path}")
 
 
@@ -154,5 +163,10 @@ def main(bag_path: Path, /, config_path: Path, verbose: bool = False) -> None:
     extractor.extract(bag_path, verbose)
 
 
-if __name__ == "__main__":
+def cli() -> None:
+    """CLI entry point"""
     tyro.cli(main)
+
+
+if __name__ == "__main__":
+    cli()

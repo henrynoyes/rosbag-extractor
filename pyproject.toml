@@ -13,12 +13,23 @@ dependencies = [
     "tyro>=0.9.35",
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
     "mypy>=1.13.0",
     "types-PyYAML>=6.0.0",
     "types-tqdm>=4.67.0.20250809"
 ]
+
+[project.scripts]
+rbe-video = "rosbag_extractor.extract_video:cli"
+rbe-info = "rosbag_extractor.info:cli"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["rosbag_extractor"]
 
 [tool.ruff]
 line-length = 120
